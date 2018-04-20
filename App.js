@@ -12,6 +12,8 @@ import FieldSettings from './components/settings/Main'
 import FieldDetailTransaction from './components/detail_transaction/Main'
 import SettingProfile from './components/settings/EditAccount'
 import FieldDetailToko from './components/detail_toko/Main'
+import AddStore from './components/Main'
+import ShowInput from './components/ShowInput'
 import ImagePicker from './components/image_pick/Main'
 
 
@@ -43,12 +45,19 @@ const App = StackNavigator({
     FieldDetailToko: {
         screen: FieldDetailToko
     },
+    AddStore: {
+        screen: AddStore
+    },
+    ShowInput: {
+        screen: ShowInput
+    },
     ImagePicker: {
         screen: ImagePicker
-    }
+    },
+    
 },
     {
-        initialRouteName: 'ImagePicker',
+        initialRouteName: 'AddStore',
         headerMode: 'none',
         navigationOptions:{
             headerVisible: false
