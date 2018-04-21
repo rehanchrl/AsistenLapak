@@ -22,25 +22,29 @@ import {
   FooterTab,
   List
 } from "native-base";
+import axios from 'axios';
 
+const uri = 'https://api.backendless.com/E0A64170-55DF-79B6-FF21-82980C30AD00/64DF2F32-8DD4-92DC-FF3C-850E44AD8700/data'
 export default class TambahLapakToko extends Component {
   state = {
-    form: {
-      
-    },
-    selectAssistant: "key1",
-    marketName: "",
-    slogan: "",
-    description: "",
-    fullAddress: "",
-    city: "",
-    postCode: "",
-    website: "",
-    phone: "",
-    email: "",
-    bankName: ""
+    form: {}
   };
   
+  handleSubmit(){
+    //post data ke API
+    axios.post(`${uri}/stores`, this.state.form).then((result)=>{
+      if(result.data){
+        axios.get(`${uri}/stores?sortBy=created%20desc`).then((result)=>{
+          //set state to return result.data and emptying field title
+          this.setState({
+            form: result.data
+          })
+        })
+        this.props.navigation.navigate("ShowInput")
+      }
+    })
+  }
+
   onValueChange(value) {
     this.setState({
       selected1: value
@@ -48,7 +52,6 @@ export default class TambahLapakToko extends Component {
   }
   
   render() {
-    console.log(this.props.navigation)
     return (
       <Container>
         <Header style={styles.mainColor} androidStatusBarColor="#b4424b">
@@ -71,16 +74,14 @@ export default class TambahLapakToko extends Component {
               <Picker.Item label="Another name" value="key3" />
               <Picker.Item label="another name again" value="key4" />
             </Picker>
-            <Label>Nama Toko</Label>
+            <Label style={styles.batasAtas}>Nama Toko</Label>
             <Item regular>
-              <Input
-                onChangeText={text => this.setState({ marketName: text })}
-              />
+              <Input onChangeText={name=> this.setState({ form: {...this.state.form, name} })} />
             </Item>
 
             <Label style={styles.batasAtas}>Slogan</Label>
             <Item regular>
-              <Input onChangeText={text => this.setState({ slogan: text })} />
+              <Input onChangeText={slogan => this.setState({ form: {...this.state.form, slogan} })} />
             </Item>
 
             <Label style={styles.batasAtas}>Logo Toko</Label>
@@ -92,70 +93,72 @@ export default class TambahLapakToko extends Component {
             >
               <Text style={styles.fileChooser}>TAMBAHKAN FILE</Text>
             </Button>
+            
+            <Label style={styles.batasAtas}>Kategori</Label>
+            <Item regular>
+              <Input onChangeText={categories => this.setState({ form: {...this.state.form, categories} })} />
+            </Item>
 
             <Label style={styles.batasAtas}>Deskripsi</Label>
             <Textarea
               rowSpan={5}
               bordered
-              onChangeText={text => this.setState({ description: text })}
+              onChangeText={description => this.setState({ form: {...this.state.form, description} })}
             />
 
             <Label style={styles.batasAtas}>Alamat Lengkap</Label>
             <Textarea
               rowSpan={5}
               bordered
-              onChangeText={text => this.setState({ fullAddress: text })}
+              onChangeText={address => this.setState({ form: {...this.state.form, address} })}
             />
 
             <Label style={styles.batasAtas}>Kota</Label>
             <Item regular>
-              <Input onChangeText={text => this.setState({ city: text })} />
+              <Input onChangeText={city => this.setState({ form: {...this.state.form, city} })} />
             </Item>
 
             <Label style={styles.batasAtas}>Kode Pos</Label>
             <Item regular>
-              <Input onChangeText={text => this.setState({ postCode: text })} />
+              <Input onChangeText={postal_code => this.setState({ form: {...this.state.form, postal_code} })} />
             </Item>
 
             <Label style={styles.batasAtas}>Situs Web</Label>
             <Item regular>
-              <Input onChangeText={text => this.setState({ website: text })} />
+              <Input onChangeText={website => this.setState({ form: {...this.state.form, website} })} />
             </Item>
 
             <Label style={styles.batasAtas}>No Telp</Label>
             <Item regular>
-              <Input onChangeText={text => this.setState({ phone: text })} />
+              <Input onChangeText={mobile_phone => this.setState({ form: {...this.state.form, mobile_phone} })} />
             </Item>
 
             <Label style={styles.batasAtas}>Alamat Email</Label>
             <Item regular>
-              <Input onChangeText={text => this.setState({ email: text })} />
+              <Input onChangeText={email => this.setState({ form: {...this.state.form, email} })} />
             </Item>
 
-            <Label style={styles.batasAtas}>Nama Bank dan No Rek.</Label>
+            <Label style={styles.batasAtas}>Nama Bank</Label>
             <Item regular>
-              <Input onChangeText={text => this.setState({ bankName: text })} />
+              <Input onChangeText={bank => this.setState({ form: {...this.state.form, bank} })} />
             </Item>
+
+            <Label style={styles.batasAtas}>Nomor Rekening</Label>
+            <Item regular>
+              <Input onChangeText={bank_account => this.setState({ form: {...this.state.form, bank_account} })} />
+            </Item>
+
+            <Label style={styles.batasAtas}>Nama Pemilik Akun Bank</Label>
+            <Item regular>
+              <Input onChangeText={bank_account_owner => this.setState({ form: {...this.state.form, bank_account_owner} })} />
+            </Item>
+
+            
 
             <ListItem style={{ alignSelf: "center", justifyContent: "center" }}>
               <Button
                 style={styles.buttone}
-                onPress={() =>
-                  this.props.navigation.navigate("ShowInput", {
-                    data: {
-                      selectAssistant: this.state.selectAssistant,
-                      marketName: this.state.marketName,
-                      slogan: this.state.slogan,
-                      description: this.state.description,
-                      fullAddress: this.state.fullAddress,
-                      city: this.state.city,
-                      postCode: this.state.postCode,
-                      website: this.state.website,
-                      phone: this.state.phone,
-                      email: this.state.email,
-                      bankName: this.state.bankName
-                    }
-                  })
+                onPress={() => this.handleSubmit()
                 }
               >
                 <Text style={{ marginLeft: 40 }}>Submit</Text>

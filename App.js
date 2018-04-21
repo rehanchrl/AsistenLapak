@@ -12,8 +12,8 @@ import FieldSettings from './components/settings/Main'
 import FieldDetailTransaction from './components/detail_transaction/Main'
 import SettingProfile from './components/settings/EditAccount'
 import FieldDetailToko from './components/detail_toko/Main'
-import AddStore from './components/Main'
-import ShowInput from './components/ShowInput'
+import AddStore from './components/add_store/Main'
+import ShowInput from './components/add_store/ShowInput'
 import ImagePicker from './components/image_pick/Main'
 
 

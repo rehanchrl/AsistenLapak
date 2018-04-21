@@ -43,9 +43,6 @@ export default class ShowInput extends Component {
               <ListItem key={form.objectId} >
                 <Text>{form.name}</Text>
               </ListItem>
-              <ListItem key={form.objectId} >
-              <Text>{form.website}</Text>
-            </ListItem>
             ) )}
           </List>
 
