@@ -25,6 +25,9 @@ import {
 
 export default class TambahLapakToko extends Component {
   state = {
+    form: {
+      
+    },
     selectAssistant: "key1",
     marketName: "",
     slogan: "",
@@ -57,7 +60,7 @@ export default class TambahLapakToko extends Component {
           <Form>
             <Picker
               iosHeader="Select one"
-              mode="modal"
+              mode="dialog"
               selectedValue={this.state.selected1}
               onValueChange={this.onValueChange.bind(this)}
               style={{ marginLeft: -7, marginBottom: 10 }}

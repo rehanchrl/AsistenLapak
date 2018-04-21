@@ -1,4 +1,4 @@
 import { AppRegistry } from 'react-native';
-import App from './App';
+import Main from './components/Main';
 
-AppRegistry.registerComponent('AsistenLapak', () => App);
+AppRegistry.registerComponent('AsistenLapak', () => Main);
