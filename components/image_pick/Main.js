@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 
-import ImagePicker from "react-native-image-picker";
+//import ImagePicker from "react-native-image-picker";
 
 export default class Main extends React.Component {
   state = {
