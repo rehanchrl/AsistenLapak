@@ -13,6 +13,7 @@
     "react-native": "0.55.3",
     "react-native-image-crop-picker": "^0.20.1",
     "react-native-image-picker": "^0.26.7",
+    "react-native-modal": "^5.4.0",
     "react-native-video": "^2.0.0",
     "react-navigation": "^1.5.11"
   },
