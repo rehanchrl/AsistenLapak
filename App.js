@@ -19,6 +19,8 @@ import ImagePicker from "./components/image_pick/Main";
 import HomeLogin from './components/simpleLogin/Home'
 import Login from './components/simpleLogin/Login'
 
+import SimpleModal from './components/simpleModal/Main' 
+
 const App = StackNavigator(
   {
     CustomerHome: {
@@ -62,10 +64,13 @@ const App = StackNavigator(
     },
     Login: {
       screen: Login
+    },
+    SimpleModal: {
+      screen: SimpleModal
     }
   },
   {
-    initialRouteName: "Login",
+    initialRouteName: "SimpleModal",
     headerMode: "none",
     navigationOptions: {
       headerVisible: false
