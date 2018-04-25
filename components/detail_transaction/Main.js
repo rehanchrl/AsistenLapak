@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Image } from "react-native";
 import {
   Container,
   Content,
@@ -12,11 +12,17 @@ import {
   Right,
   Body,
   Text,
-  Title
+  Title,
+  List,
+  ListItem
 } from "native-base";
+import axios from "axios";
 
 import CustomList from "../common/List";
 import CustomListBarang from "../common/List_barang";
+
+const uri =
+  "https://api.backendless.com/E0A64170-55DF-79B6-FF21-82980C30AD00/64DF2F32-8DD4-92DC-FF3C-850E44AD8700";
 
 export default class TabSend extends Component {
   state = {
@@ -24,10 +30,26 @@ export default class TabSend extends Component {
       title: "Sabun",
       amount: 3,
       priceperamount: 200
-    }
+    },
+    posts: []
   };
 
+  allPosts() {
+    //GET data from API
+    axios.get(`${uri}/data/products?sortBy=created%20desc`).then(result => {
+      //set state to return result.data and emptying field title
+      this.setState({
+        posts: result.data,
+        title: ""
+      });
+    });
+  }
+
+  componentDidMount() {
+    this.allPosts();
+  }
   render() {
+    console.log(this.props.list);
     return (
       <Container>
         <Header
@@ -59,7 +81,7 @@ export default class TabSend extends Component {
 
           <Text style={styles.deadline}>Daftar Barang</Text>
 
-          <CustomListBarang list={this.state.info} />
+          {/* <CustomListBarang list={this.state.info} /> */}
 
           <View
             style={{
@@ -73,6 +95,18 @@ export default class TabSend extends Component {
               {this.state.info.amount * this.state.info.priceperamount}
             </Text>
           </View>
+        </Content>
+        <Content>
+          {this.state.posts.map(post => (
+            // <ListItem key={post.objectId}>
+            //   <Text>{post.name}</Text>
+            //   <Image
+            //     style={{ width: 50, height: 50 }}
+            //     source={{ uri: post.image }}
+            //   />
+            // </ListItem>
+            <CustomListBarang item={post} key={post.objectId} />
+          ))}
         </Content>
         <Button primary full style={{ margin: 10 }}>
           <Text> Proccess </Text>

@@ -9,12 +9,15 @@ import FieldHome from "./components/field/home/Main";
 import FieldCart from "./components/field/cart/Main";
 import FieldSettings from "./components/settings/Main";
 
-import FieldDetailTransaction from "./components/detail_transaction/Main";
+import DetailTransaction from "./components/detail_transaction/Main";
 import SettingProfile from "./components/settings/EditAccount";
 import FieldDetailToko from "./components/detail_toko/Main";
 import AddStore from "./components/add_store/Main";
 import ShowInput from "./components/add_store/ShowInput";
 import ImagePicker from "./components/image_pick/Main";
+
+import HomeLogin from './components/simpleLogin/Home'
+import Login from './components/simpleLogin/Login'
 
 const App = StackNavigator(
   {
@@ -36,8 +39,8 @@ const App = StackNavigator(
     FieldSettings: {
       screen: FieldSettings
     },
-    FieldDetailTransaction: {
-      screen: FieldDetailTransaction
+    DetailTransaction: {
+      screen: DetailTransaction
     },
     SettingProfile: {
       screen: SettingProfile
@@ -53,10 +56,16 @@ const App = StackNavigator(
     },
     ImagePicker: {
       screen: ImagePicker
+    },
+    HomeLogin: {
+      screen: HomeLogin
+    },
+    Login: {
+      screen: Login
     }
   },
   {
-    initialRouteName: "AddStore",
+    initialRouteName: "Login",
     headerMode: "none",
     navigationOptions: {
       headerVisible: false

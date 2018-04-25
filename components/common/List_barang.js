@@ -17,8 +17,9 @@ import {
 
 export default class CustomList extends Component {
   render() {
-    const { title, amount, priceperamount } = this.props.list;
+    const { image, name, price } = this.props.item;
 
+    // console.log(this.props.list[0].name); buat belajar tapi ini salah
     return (
       <Card>
         <CardItem>
@@ -26,13 +27,13 @@ export default class CustomList extends Component {
             <View style={{ flex: 1 }}>
               <Image
                 style={{ maxWidth: 50, height: 50 }}
-                source={require("../images/logo.png")}
+                source={{ uri: image }}
               />
             </View>
             <View style={{ flex: 3 }}>
-              <Text style={styles.judul}>{title}</Text>
-              <Text>{amount}</Text>
-              <Text>{priceperamount}</Text>
+              <Text style={styles.judul}>{name}</Text>
+              {/* <Text>{amount}</Text> */}
+              <Text>{price}</Text>
             </View>
           </View>
         </CardItem>
