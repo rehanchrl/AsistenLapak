@@ -236,7 +236,7 @@ export default class TambahLapakToko extends Component {
                   style={[
                     styles.logo,
                     styles.logoContainer,
-                    { marginBottom: 20 }
+                    { marginBottom: 20, alignSelf: "center" }
                   ]}
                 >
                   <Image style={styles.logo} source={this.state.logoSource} />
