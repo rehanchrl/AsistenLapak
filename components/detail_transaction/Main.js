@@ -81,8 +81,9 @@ export default class TabSend extends Component {
 
           <Text style={styles.deadline}>Daftar Barang</Text>
 
-          {/* <CustomListBarang list={this.state.info} /> */}
-
+          {this.state.posts.map(post => (
+            <CustomListBarang item={post} key={post.objectId} />
+          ))}
           <View
             style={{
               flex: 1,
@@ -91,22 +92,10 @@ export default class TabSend extends Component {
             }}
           >
             <Text style={styles.pricetotal}>Total</Text>
-            <Text style={styles.pricetotal}>
+            {/* <Text style={styles.pricetotal}>
               {this.state.info.amount * this.state.info.priceperamount}
-            </Text>
+            </Text> */}
           </View>
-        </Content>
-        <Content>
-          {this.state.posts.map(post => (
-            // <ListItem key={post.objectId}>
-            //   <Text>{post.name}</Text>
-            //   <Image
-            //     style={{ width: 50, height: 50 }}
-            //     source={{ uri: post.image }}
-            //   />
-            // </ListItem>
-            <CustomListBarang item={post} key={post.objectId} />
-          ))}
         </Content>
         <Button primary full style={{ margin: 10 }}>
           <Text> Proccess </Text>
