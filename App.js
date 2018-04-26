@@ -16,10 +16,12 @@ import AddStore from "./components/add_store/Main";
 import ShowInput from "./components/add_store/ShowInput";
 import ImagePicker from "./components/image_pick/Main";
 
-import HomeLogin from './components/simpleLogin/Home'
-import Login from './components/simpleLogin/Login'
+import HomeLogin from "./components/simpleLogin/Home";
+import Login from "./components/simpleLogin/Login";
 
-import SimpleModal from './components/simpleModal/Main' 
+import SimpleModal from "./components/simpleModal/Main";
+
+import MainModal from "./components/test/Modal";
 
 const App = StackNavigator(
   {
@@ -67,10 +69,13 @@ const App = StackNavigator(
     },
     SimpleModal: {
       screen: SimpleModal
+    },
+    MainModal: {
+      screen: MainModal
     }
   },
   {
-    initialRouteName: "SimpleModal",
+    initialRouteName: "AddStore",
     headerMode: "none",
     navigationOptions: {
       headerVisible: false

@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import Modal from "react-native-modal";
 
-import styles from "./app.style";
-
 export default class Example extends Component {
   state = {
     visibleModal: null
@@ -103,7 +101,6 @@ export default class Example extends Component {
     );
   }
 }
-
 
 const styles = StyleSheet.create({
   container: {

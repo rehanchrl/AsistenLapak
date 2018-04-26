@@ -20,18 +20,20 @@ import {
   Input,
   Textarea,
   List,
+  ListItem,
   Label,
   Button,
   Footer,
   Body,
   Title,
-  ListItem,
   Right,
   Left,
   Picker,
-  Icon
+  Icon,
+  Thumbnail
 } from "native-base";
 import axios from "axios";
+import Modal from "react-native-modal";
 import ImagePicker from "react-native-image-picker";
 
 const uri =
@@ -40,19 +42,30 @@ const uri =
 export default class TambahLapakToko extends Component {
   state = {
     form: {},
-    avatarSource: null
+    logoSource: null,
+    visibleModal: false,
+    users: [],
+    selectedName: null,
+    userObjectId: ""
   };
 
   handleSubmit() {
+    const userAssistant = [this.state.userObjectId];
+
     //post data ke API
     axios.post(`${uri}/data/stores`, this.state.form).then(result => {
       if (result.data) {
-        axios.get(`${uri}/data/stores?sortBy=created%20desc`).then(result => {
-          //set state to return result.data and emptying field title
-          this.setState({
-            form: result.data
+        axios
+          .post(
+            `${uri}/data/stores/${result.data.objectId}/assistant:Users:1`,
+            userAssistant
+          )
+          .then(resultRelation => {
+            //set state to return result.data and emptying field title
+            this.setState({
+              form: resultRelation.data
+            });
           });
-        });
         this.props.navigation.navigate("ShowInput");
       }
     });
@@ -67,7 +80,6 @@ export default class TambahLapakToko extends Component {
         skipBackup: true
       }
     };
-
     ImagePicker.showImagePicker(options, response => {
       console.log("Response = ", response);
 
@@ -79,60 +91,105 @@ export default class TambahLapakToko extends Component {
         console.log("User tapped custom button: ", response.customButton);
       } else {
         let source = { uri: response.uri };
-
-        // You can also display the image using data:
-        // let source = { uri: 'data:image/jpeg;base64,' + response.data };
-
         this.setState({
-          avatarSource: source
+          logoSource: source
         });
-        const data = new FormData(); // you can append anyone.
+        const data = new FormData();
         data.append("photo", {
           uri: source.uri,
-          type: "image/jpeg", // or photo.type
+          type: "image/jpeg",
           name: "Photo"
         });
+        // Photo name still static
         fetch(`${uri}/files/images/logo-toko.png?overwrite=true`, {
           method: "post",
           body: data
         }).then(result => {
-          // alert(JSON.stringify(res.url));
           this.setState({ form: { ...this.state.form, logo: result.url } });
         });
       }
     });
   }
 
-  onValueChange(value) {
-    this.setState({
-      selected1: value
+  getAllUser() {
+    axios.get(`${uri}/data/Users`).then(result => {
+      console.log(result.data);
+      this.setState({ users: result.data });
     });
+  }
+
+  componentDidMount() {
+    this.getAllUser();
   }
 
   render() {
     return (
       <Container>
-        <Header style={styles.mainColor} androidStatusBarColor="#b4424b">
+        <Header
+          style={{ backgroundColor: "#dd5453" }}
+          androidStatusBarColor="#b4424b"
+        >
           <Body>
             <Title>Tambah Lapak CS</Title>
           </Body>
         </Header>
         <Content padder>
           <Form>
-            <Picker
-              iosHeader="Select one"
-              mode="dialog"
-              selectedValue={this.state.selected1}
-              onValueChange={this.onValueChange.bind(this)}
-              style={{ marginLeft: -7, marginBottom: 10 }}
-            >
-              <Picker.Item label="si A" value="key0" />
-              <Picker.Item label="si B" value="key1" />
-              <Picker.Item label="si C" value="key2" />
-              <Picker.Item label="Another name" value="key3" />
-              <Picker.Item label="another name again" value="key4" />
-            </Picker>
-            <Label style={styles.marginTop}>Nama Toko</Label>
+            <Label style={{ marginTop: 10 }}>Nama Asisten Lapak </Label>
+            <List>
+              <ListItem onPress={() => this.setState({ visibleModal: true })}>
+                <Body>
+                  {this.state.selectedName === null ? (
+                    <Text>Please Select Assistant</Text>
+                  ) : (
+                    <Text>{this.state.selectedName}</Text>
+                  )}
+                </Body>
+                <Right>
+                  <Icon name="arrow-dropdown" />
+                </Right>
+              </ListItem>
+            </List>
+
+            <Modal isVisible={this.state.visibleModal}>
+              <View style={styles.modalContent}>
+                <List>
+                  {this.state.users.map(user => {
+                    return (
+                      <ListItem
+                        key={user.objectId}
+                        onPress={() =>
+                          this.setState({
+                            selectedName: user.name,
+                            userObjectId: user.objectId,
+                            visibleModal: false
+                          })
+                        }
+                      >
+                        <Thumbnail
+                          square
+                          size={5}
+                          source={{ uri: user.photo }}
+                          style={{ marginRight: 20 }}
+                        />
+                        <Body>
+                          <Text>{user.name}</Text>
+                          <Text>{user.email}</Text>
+                        </Body>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+                <Button
+                  style={styles.button}
+                  onPress={() => this.setState({ visibleModal: false })}
+                >
+                  <Text>Close</Text>
+                </Button>
+              </View>
+            </Modal>
+
+            <Label style={{ marginTop: 10 }}>Nama Toko</Label>
             <Item regular>
               <Input
                 onChangeText={name =>
@@ -141,7 +198,7 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <Label style={styles.marginTop}>Slogan</Label>
+            <Label style={{ marginTop: 10 }}>Slogan</Label>
             <Item regular>
               <Input
                 onChangeText={slogan =>
@@ -150,25 +207,44 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <Label style={styles.marginTop}>Logo Toko</Label>
+            <Label style={{ marginTop: 10 }}>Logo Toko</Label>
 
-            {this.state.avatarSource === null ? (
+            {this.state.logoSource === null ? (
               <Button transparent onPress={this.selectPhotoTapped.bind(this)}>
-                <Text style={styles.fileChooser}>TAMBAHKAN FILE</Text>
+                <Text
+                  style={{
+                    color: "#156af2",
+                    marginLeft: -17
+                  }}
+                >
+                  Tambahkan Logo
+                </Text>
               </Button>
             ) : (
-              <View
-                style={[
-                  styles.avatar,
-                  styles.avatarContainer,
-                  { marginBottom: 20 }
-                ]}
-              >
-                <Image style={styles.avatar} source={this.state.avatarSource} />
+              <View>
+                <Button transparent onPress={this.selectPhotoTapped.bind(this)}>
+                  <Text
+                    style={{
+                      color: "#156af2",
+                      marginLeft: -17
+                    }}
+                  >
+                    Ganti Logo
+                  </Text>
+                </Button>
+                <View
+                  style={[
+                    styles.logo,
+                    styles.logoContainer,
+                    { marginBottom: 20 }
+                  ]}
+                >
+                  <Image style={styles.logo} source={this.state.logoSource} />
+                </View>
               </View>
             )}
 
-            <Label style={styles.marginTop}>Kategori</Label>
+            <Label style={{ marginTop: 10 }}>Kategori</Label>
             <Item regular>
               <Input
                 onChangeText={categories =>
@@ -177,7 +253,7 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <Label style={styles.marginTop}>Deskripsi</Label>
+            <Label style={{ marginTop: 10 }}>Deskripsi</Label>
             <Textarea
               rowSpan={5}
               bordered
@@ -186,7 +262,7 @@ export default class TambahLapakToko extends Component {
               }
             />
 
-            <Label style={styles.marginTop}>Alamat Lengkap</Label>
+            <Label style={{ marginTop: 10 }}>Alamat Lengkap</Label>
             <Textarea
               rowSpan={5}
               bordered
@@ -195,7 +271,7 @@ export default class TambahLapakToko extends Component {
               }
             />
 
-            <Label style={styles.marginTop}>Kota</Label>
+            <Label style={{ marginTop: 10 }}>Kota</Label>
             <Item regular>
               <Input
                 onChangeText={city =>
@@ -204,7 +280,7 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <Label style={styles.marginTop}>Kode Pos</Label>
+            <Label style={{ marginTop: 10 }}>Kode Pos</Label>
             <Item regular>
               <Input
                 onChangeText={postal_code =>
@@ -213,7 +289,7 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <Label style={styles.marginTop}>Situs Web</Label>
+            <Label style={{ marginTop: 10 }}>Situs Web</Label>
             <Item regular>
               <Input
                 onChangeText={website =>
@@ -222,7 +298,7 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <Label style={styles.marginTop}>No Telp</Label>
+            <Label style={{ marginTop: 10 }}>No Telp</Label>
             <Item regular>
               <Input
                 onChangeText={mobile_phone =>
@@ -231,7 +307,7 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <Label style={styles.marginTop}>Alamat Email</Label>
+            <Label style={{ marginTop: 10 }}>Alamat Email</Label>
             <Item regular>
               <Input
                 onChangeText={email =>
@@ -240,7 +316,7 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <Label style={styles.marginTop}>Nama Bank</Label>
+            <Label style={{ marginTop: 10 }}>Nama Bank</Label>
             <Item regular>
               <Input
                 onChangeText={bank =>
@@ -249,7 +325,7 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <Label style={styles.marginTop}>Nomor Rekening</Label>
+            <Label style={{ marginTop: 10 }}>Nomor Rekening</Label>
             <Item regular>
               <Input
                 onChangeText={bank_account =>
@@ -258,7 +334,7 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <Label style={styles.marginTop}>Nama Pemilik Akun Bank</Label>
+            <Label style={{ marginTop: 10 }}>Nama Pemilik Akun Bank</Label>
             <Item regular>
               <Input
                 onChangeText={bank_account_owner =>
@@ -269,19 +345,14 @@ export default class TambahLapakToko extends Component {
               />
             </Item>
 
-            <ListItem style={{ alignSelf: "center", justifyContent: "center" }}>
-              <Button
-                style={styles.buttone}
-                onPress={() => this.handleSubmit()}
-              >
-                <Text style={{ marginLeft: 40 }}>Submit</Text>
-              </Button>
-            </ListItem>
+            <Button style={styles.button} onPress={() => this.handleSubmit()}>
+              <Text>Submit</Text>
+            </Button>
           </Form>
         </Content>
 
-        <Footer style={styles.mainColor}>
-          <FooterTab style={styles.mainColor}>
+        <Footer style={{ backgroundColor: "#dd5453" }}>
+          <FooterTab style={{ backgroundColor: "#dd5453" }}>
             <Button>
               <Icon name="home" />
             </Button>
@@ -299,50 +370,43 @@ export default class TambahLapakToko extends Component {
 }
 
 const styles = StyleSheet.create({
-  buttone: {
-    width: "60%",
-    backgroundColor: "#b4424b"
-  },
-
-  marginTop: {
-    marginTop: 10
-  },
-
-  labelBtn: {
-    marginLeft: 55
-  },
-
-  labelSelect: {
-    marginLeft: 20
-  },
-
-  label: {
-    margin: 20
-  },
-
-  iteme: {
-    marginLeft: -0.1
-  },
-
   fileChooser: {
     color: "#156af2",
     marginLeft: -17
   },
-
-  mainColor: {
-    backgroundColor: "#dd5453"
+  button: {
+    margin: 10,
+    width: "60%",
+    backgroundColor: "#b4424b",
+    alignSelf: "center",
+    justifyContent: "center"
   },
-  avatarContainer: {
+  logoContainer: {
     borderColor: "#9B9B9B",
     borderWidth: 1 / PixelRatio.get(),
     justifyContent: "center",
     alignItems: "center"
   },
-  avatar: {
+  logo: {
     borderRadius: 75,
     width: 150,
     height: 150,
     justifyContent: "center",
     alignItems: "center"
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 2,
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)"
+  },
+  bottomModal: {
+    justifyContent: "flex-end",
+    margin: 0
   }
 });
